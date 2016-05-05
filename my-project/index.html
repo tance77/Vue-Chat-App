@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>simple-chat-app</title>
+  </head>
+  <body>
+        <!-- built files will be auto injected -->
+    <!-- <app></app> -->
+    <div id="chat">
+      <div class="message" v-for="message in messages">
+        {{ message[2] }}
+      </div>
+      <form v-on:submit="send">
+          <input id="message" v-model="message"/>
+          <button>Send</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://vuejs.org/js/vue.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript">
+       var channel = "sexsexsexporn";
+       var userId = "1";
+       var userName = "Lance";
+    </script>
+    <script type="text/javascript">
+       var socket= io('http://localhost:3000/');
+       new Vue({
+         el: '#chat',
+
+         data:{
+           messages: [],
+           message: null
+         },
+
+         ready: function(){
+           socket.on('connect', function(){
+             socket.emit('join', [channel, userId, userName]);
+             console.log('Connected to the server');
+           });
+
+          socket.on('chat.' + channel, function(payload) {
+            this.messages.push(['chat', payload[1], payload[2]]);
+          }.bind(this));
+         },
+
+         methods:{
+           send: function(e){
+            e.preventDefault();
+            var payload = [channel, userId, this.message];
+            if(this.message !== null && this.message != ''){
+             socket.emit('chat', payload);
+           }
+             this.message = null;
+           }
+         }
+       });
+    </script>
+
+  </body>
+</html>
